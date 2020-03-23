@@ -1,0 +1,43 @@
+{
+  "name": "xpressengine-plugin/xe_poll",
+  "description": "This Package is Xpressengine Plugin - 설문.",
+  "keywords": [
+    "xpressengine",
+    "plugin",
+    "poll"
+  ],
+  "license": "LGPL-3.0-or-later",
+  "version": "0.9.0",
+  "type": "xpressengine-plugin",
+  "support": {
+    "email": "developers@xpressengine.com"
+  },
+  "authors": [
+    {
+      "name": "XE Developers",
+      "email": "developers@xpressengine.com",
+      "homepage": "https://store.xehub.io/plugins/xe_poll",
+      "role": "Developer"
+    }
+  ],
+  "extra": {
+    "xpressengine": {
+      "title": "설문",
+      "component": {
+        "editortool/poll_tool@poll": {
+          "class": "Xpressengine\\Plugins\\Poll\\Components\\EditorTools\\Poll\\PollEditorTool",
+          "name": "Poll Editor Tool",
+          "description": "에디터에서 투표 기능 사용"
+        }
+      }
+    }
+  },
+  "require": {
+    "xpressengine/xpressengine": "~3.0.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "Xpressengine\\Plugins\\Poll\\": "src/"
+    }
+  }
+}
