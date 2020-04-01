@@ -55,6 +55,16 @@ class Handler
         return $item;
     }
 
+    public function bind(array $ids, $targetId, $targetType)
+    {
+        if (count($ids) > 0) {
+            Poll::whereIn('id', $ids)->update([
+                'target_id' => $targetId,
+                'target_type' => $targetType,
+            ]);
+        }
+    }
+
     public function storeLog($args)
     {
         $item = new PollLog();

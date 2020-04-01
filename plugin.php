@@ -5,14 +5,18 @@ use Route;
 use Xpressengine\Plugin\AbstractPlugin;
 use Illuminate\Database\Schema\Blueprint;
 use Schema;
+use Xpressengine\Config\ConfigEntity;
+use Xpressengine\User\UserInterface;
+use Xpressengine\Plugins\Board\Models\Board;
+use Xpressengine\Plugins\Comment\Models\Comment;
 
 class Plugin extends AbstractPlugin
 {
     public function register()
     {
         app()->singleton(Handler::class, function ($app) {
-            $proxyClass = app('xe.interception')->proxy(Handler::class, 'Point');
-            return new $proxyClass($this, app('xe.config'));
+            $proxyClass = app('xe.interception')->proxy(Handler::class, 'XePoll');
+            return new $proxyClass();
         });
         app()->alias(Handler::class, 'xe.xe_poll.handler');
     }
@@ -25,6 +29,7 @@ class Plugin extends AbstractPlugin
     public function boot()
     {
         $this->route();
+        $this->registerIntercepts();
     }
 
     protected function route()
@@ -68,6 +73,85 @@ class Plugin extends AbstractPlugin
         }, ['namespace' => 'Xpressengine\Plugins\Poll\Controllers']);
     }
 
+    protected function registerIntercepts()
+    {
+        // board - write document
+        intercept(
+            '\Xpressengine\Plugins\Board\Handler@add',
+            'xe_poll.board-add',
+            function ($func, array $args, UserInterface $user, ConfigEntity $config) {
+                \XeDB::beginTransaction();
+                /** @var Board $board */
+                $board = $func($args, $user, $config);
+
+                $request = app('request');
+                if ($request->has('_polls') !== false) {
+                    $pollHandler = app('xe.xe_poll.handler');
+                    $pollHandler->bind($request->get('_polls'), $board->id, get_class($board));
+                }
+                \XeDB::commit();
+                return $board;
+            }
+        );
+
+        // board - write document
+        intercept(
+            '\Xpressengine\Plugins\Board\Handler@put',
+            'xe_poll.board-put',
+            function ($func, Board $board, array $args, ConfigEntity $config) {
+                \XeDB::beginTransaction();
+                /** @var Board $board */
+                $board = $func($board, $args, $config);
+
+                $request = app('request');
+                if ($request->has('_polls') !== false) {
+                    $pollHandler = app('xe.xe_poll.handler');
+                    $pollHandler->bind($request->get('_polls'), $board->id, get_class($board));
+                }
+                \XeDB::commit();
+                return $board;
+            }
+        );
+
+        // comment - write comment
+        intercept(
+            'Xpressengine\Plugins\Comment\Handler@create',
+            'xe_poll.comment-create',
+            function ($func, $inputs, $user = null) {
+                \XeDB::beginTransaction();
+                /** @var Comment $comment */
+                $comment = $func($inputs, $user);
+
+                $request = app('request');
+                if ($request->has('_polls') !== false) {
+                    $pollHandler = app('xe.xe_poll.handler');
+                    $pollHandler->bind($request->get('_polls'), $comment->id, get_class($comment));
+                }
+                \XeDB::commit();
+                return $comment;
+            }
+        );
+
+        // comment - write comment
+        intercept(
+            'Xpressengine\Plugins\Comment\Handler@put',
+            'xe_poll.comment-put',
+            function ($func, $comment) {
+                \XeDB::beginTransaction();
+                /** @var Comment $comment */
+                $comment = $func($comment);
+
+                $request = app('request');
+                if ($request->has('_polls') !== false) {
+                    $pollHandler = app('xe.xe_poll.handler');
+                    $pollHandler->bind($request->get('_polls'), $comment->id, get_class($comment));
+                }
+                \XeDB::commit();
+                return $comment;
+            }
+        );
+    }
+
     public function getSettingsURI()
     {
         return route('xe_poll::setting.index');
@@ -83,6 +167,8 @@ class Plugin extends AbstractPlugin
     public function activate($installedVersion = null)
     {
         // implement code
+        $trans = app('xe.translator');
+        $trans->putFromLangDataSource('xe_poll', base_path('plugins/xe_poll/langs/lang.php'));
     }
 
     /**
@@ -101,6 +187,7 @@ class Plugin extends AbstractPlugin
                     $table->increments('id');
                     $table->string('user_id', 36)->index();
                     $table->string('target_id', 36)->index();
+                    $table->string('target_type')->nullable();
                     $table->bigInteger('poll_count')->default(0);
                     $table->string('title', 255);
                     $table->string('ipaddress', 128)->index();
@@ -178,6 +265,11 @@ class Plugin extends AbstractPlugin
     public function update()
     {
         // implement code
+        if (!Schema::hasColumn('polls', 'target_type')) {
+            Schema::table('polls', function ($table) {
+                $table->string('target_type')->nullable();
+            });
+        }
     }
 
     /**
@@ -189,6 +281,9 @@ class Plugin extends AbstractPlugin
     public function checkUpdated()
     {
         // implement code
+        if (!Schema::hasColumn('polls', 'target_type')) {
+            return false;
+        }
 
         return parent::checkUpdated();
     }
