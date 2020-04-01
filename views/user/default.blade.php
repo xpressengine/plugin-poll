@@ -14,8 +14,8 @@
     .progress{background-color:#dee2e6;height:20px; width:100%;}
     .progress-bar{background-color:#17a2b8;height:20px; width:0%;}
 
-    .poll-question {border-bottom:1px solid #888;font-weight: 400;}
-    .item .poll-question {border-bottom:1px solid #888;font-weight: 400;}
+    .poll-question {border-bottom:1px solid #888;font-weight: bold;}
+    .item .poll-question {border-bottom:1px solid #888;font-weight: bold;}
     
     .poll-footer {text-align:center;padding-top:40px;}
 
