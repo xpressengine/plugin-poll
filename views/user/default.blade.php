@@ -92,7 +92,7 @@
 
         <div class="poll-body">
             <div class="poll-header">
-                <p class="title">투표 : {{$poll->title}} <b class="poll-header__sub-text">(참여자: {{$poll->poll_count}})<b></p>
+                <p class="title">투표 : {{$poll->title}} <b class="poll-header__sub-text">(참여자: {{$poll->poll_count}})</b></p>
                 <p class="date">설문조사 종료일 : {{$poll->expired_at->format('Y-m-d')}}</p>
             </div>
 
