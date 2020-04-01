@@ -38,9 +38,8 @@
 
                   var editor = window.CKEDITOR.instances[editorId]
                   console.debug('editor', editor)
-
                   var targetEditor = editor
-                    window.open(window.XePollToolURL.get('popup'), windowName, 'width=700,height=500')
+                    window.open(window.XePollToolURL.get('popup') + '?poll_id='+pollId, windowName, 'width=700,height=500')
 
                     Editor.$$once('editorTools.XePollTool.popup', function (eventName, obj) {
                         obj.edit(targetEditor, { pollId: pollId })

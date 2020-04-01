@@ -42,6 +42,19 @@ class UserController extends Controller
         $current = Carbon::now();
         $expiredAt = $current->addDay(7)->format('Y-m-d');
 
+        if ($request->has('poll_id')) {
+//            $poll = Poll::find($request->get('poll_id'));
+//            $pollItems = $poll->items;
+            // edit function not supported
+            $alertMessage = xe_trans('xe_poll::pollNotSupportEditMode');
+            return "
+                <script>
+                    alert('{$alertMessage}');
+                    window.close();
+                </script>
+            ";
+        }
+
         XePresenter::widgetParsing(false);
         return XePresenter::make('xe_poll::views.user.tool_popup', [
             'title' => $title,

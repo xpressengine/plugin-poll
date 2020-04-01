@@ -61,4 +61,8 @@ return [
         'ko' => '설문 제거',
         'en' => 'Remove Survey',
     ],
+    'pollNotSupportEditMode' => [
+        'ko' => '설문조사는 수정할 수 없습니다. 삭제 후 다시 생성해야 합니다.',
+        'en' => 'Surveys cannot be edited. You will need to delete it and create it again.',
+    ],
 ];
