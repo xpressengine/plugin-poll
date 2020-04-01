@@ -81,6 +81,9 @@
 
                 return this;
             },
+            edit: function (targetEditor, id) {
+                console.debug('EDIT id', id)
+            },
             cache: function() {
                 _defaultSurvey = $('.form-item').html();
                 _defaultOption = $('.options .form-group').html();

@@ -27,8 +27,28 @@
                         obj.init(targetEditor, cbAppendToolContent);
                     })
                 },
-                elementDoubleClick: function () {},
-                beforeSubmit: function (editor) {},
+                elementDoubleClick: function () {
+                  var $editor = $(this).closest('.cke')
+                  var editorId = String($editor.attr('id')).replace('cke_', '') || null
+                  var pollId = $(this).data('id') || null
+
+                  if (!editorId) {
+                    return
+                  }
+
+                  var editor = window.CKEDITOR.instances[editorId]
+                  console.debug('editor', editor)
+
+                  var targetEditor = editor
+                    window.open(window.XePollToolURL.get('popup'), windowName, 'width=700,height=500')
+
+                    Editor.$$once('editorTools.XePollTool.popup', function (eventName, obj) {
+                        obj.edit(targetEditor, { pollId: pollId })
+                    })
+                },
+                beforeSubmit: function (editor) {
+                  // console.debug('beforeSubmit', editor)
+                },
                 editorLoaded: function (editor) {}
             }
         })
