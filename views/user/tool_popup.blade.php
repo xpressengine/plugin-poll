@@ -230,6 +230,14 @@
                             ].join('');
 
                             _this.appendToolContent(widget);
+
+                            // 폼에 _polls 필드 추가
+                            var $form = $(_this.targetEditor.container.$).closest('form')
+                            var $fields = $form.find('[name="_polls[]"]')
+                            if (!$fields.filter('[value=' + pollId + ']').length) {
+                                $form.prepend('<input type="hidden" name="_polls[]" value="' + pollId + '" />')
+                            }
+
                             self.close();
                         }
                     });
