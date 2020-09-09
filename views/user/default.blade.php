@@ -45,6 +45,7 @@
     @if ($isExpired == false && $isJoined == false)
     <div class="__xe_poll_survey xe_poll_survey" data-id="{{$poll->id}}">
         <form class="__xe_poll_form" method="post" action="{{route('xe_poll::editor_tool.join', ['id' => $poll->id])}}">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <input type="hidden" name="return_url" value="{{$current_url}}" />
             <input type="hidden" name="id" value="{{$poll->id}}" />
             <div class="poll-body">
