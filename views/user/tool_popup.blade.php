@@ -216,7 +216,7 @@
                         });
                     });
 
-                    $.ajax({
+                    XE.ajax({
                         url:'{{ $routeStore }}',
                         method: 'post',
                         data : params,
